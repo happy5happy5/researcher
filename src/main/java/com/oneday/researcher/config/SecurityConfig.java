@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.logging.Logger;
 
@@ -36,8 +37,12 @@ public class SecurityConfig {
 
     private final RSAKeyProperties keys;
 
+//    private final JwtAuthFilter jwtAuthFilter;
+
+
     public SecurityConfig(RSAKeyProperties keys) {
         this.keys = keys;
+//        this.jwtAuthFilter = jwtAuthFilter;
     }
 
 
@@ -62,33 +67,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                                .anyRequest().authenticated());
-
-//        http
-//                .formLogin(
-//                        form -> form
+                                .anyRequest().permitAll()
+                );
+//                                .requestMatchers("/admin/**").hasRole("ADMIN")
+//                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+//                                .anyRequest().authenticated());
+//                        .oauth2Login(oauth2 -> oauth2
 //                                .loginPage("/auth/login")
-//                                .loginProcessingUrl("/auth/login")
-//                                .defaultSuccessUrl("/auth/success", true)
-//                                .failureUrl("/auth/failure")
+//                                .defaultSuccessUrl("/auth/login?success=true")
+//                                .failureUrl("/auth/login?error=true")
 //                                .permitAll()
-//                );
-
+//                        );
         http
-                .oauth2ResourceServer(oauth->{
-                    oauth.jwt(jwt->{
-//                        jwt.decoder(jwtDecoder());
-                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
-                    });
-                })
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-
-        ;
         return http.build();
     }
 
@@ -113,6 +107,5 @@ public class SecurityConfig {
         jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
         return jwtConverter;
     }
-
 
 }

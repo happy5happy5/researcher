@@ -4,17 +4,18 @@ import com.oneday.researcher.entity.ApplicationUser;
 import com.oneday.researcher.model.LoginResponseDTO;
 import com.oneday.researcher.model.RegistrationDTO;
 import com.oneday.researcher.service.AuthenticationService;
-import lombok.Getter;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 @Controller
-//@RestController
 @RequestMapping("/auth")
 @CrossOrigin("*")
 public class AuthenticationController {
@@ -30,30 +31,45 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login")
-    public String loginPage(Model model) {
+    public String login(Model model) {
         logger.info("[GET] /auth/login");
-//        model.addAttribute("login", new RegistrationDTO());
+//        model.addAttribute("registrationDTO", new RegistrationDTO());
         return "login";
     }
 
 
 //    @PostMapping("/login")
 //    @ResponseBody
-//    public LoginResponseDTO login(@RequestBody RegistrationDTO body) {
+//    public LoginResponseDTO login(@RequestBody @NotNull RegistrationDTO body , Model model, HttpServletRequest res) {
 //        logger.info("[POST] /auth/login");
-//        return authenticationService.login(body.getUsername(), body.getPassword());
+//        LoginResponseDTO dto = authenticationService.login(body.getUsername(), body.getPassword());
+//        if (!Objects.equals(dto.getToken(), "")) {
+//            model.addAttribute("loginResponseDTO", res);
+//            return dto;
+//        }
+//
+//        return null;
 //    }
 
     @PostMapping("/login")
-    @ResponseBody
-    public LoginResponseDTO login(@RequestBody @NotNull RegistrationDTO body) {
+    public String login(@NotNull RegistrationDTO body , Model model, HttpSession session, HttpServletResponse res) {
         logger.info("[POST] /auth/login");
-        return authenticationService.login(body.getUsername(), body.getPassword());
+        LoginResponseDTO dto = authenticationService.login(body.getUsername(), body.getPassword());
+        String token = dto.getToken();
+        if (!Objects.equals(dto.getToken(), "")) {
+            session.setAttribute("token", token);
+            model.addAttribute("token", token);
+            res.setHeader("Authorization", "Bearer " + token);
+//            res.setStatus(200);
+            return "home";
+        }
+
+        return "redirect:/auth/login?error=1";
     }
 
     @PostMapping("/register")
     @ResponseBody
-    public ApplicationUser registerUser(@RequestBody @NotNull RegistrationDTO body) {
+    public ApplicationUser registerUser(@NotNull RegistrationDTO body) {
         logger.info("[POST] /auth/register");
         return authenticationService.registerUser(body.getUsername(), body.getPassword());
     }

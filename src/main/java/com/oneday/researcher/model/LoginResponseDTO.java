@@ -12,5 +12,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LoginResponseDTO {
     private ApplicationUser applicationUser;
-    private String jwt;
+    private String token;
 }

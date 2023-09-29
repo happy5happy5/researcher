@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,9 +35,32 @@ public class TokenService {
                 .issuedAt(now)
                 .claim("roles", scope)
                 .claim("username", auth.getName())
-//                .claim("iat", now.getEpochSecond())
-//                .claim("exp", now.plusSeconds(60 * 60).getEpochSecond())
+                .claim("iat", now.getEpochSecond())
+                .claim("exp", now.plusSeconds(60 * 60).getEpochSecond())
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
+
+
+    public String getUsername(String token) {
+        return jwtDecoder.decode(token).getClaimAsString("username");
+    }
+
+    public String getRoles(String token) {
+        return jwtDecoder.decode(token).getClaimAsString("roles");
+    }
+
+    public String getSubject(String token) {
+        return jwtDecoder.decode(token).getSubject();
+    }
+
+    private boolean isTokenExpired(String token) {
+        return Objects.requireNonNull(jwtDecoder.decode(token).getExpiresAt()).isBefore(Instant.now());
+    }
+
+    public boolean validateToken(String token, Authentication auth) {
+        return !isTokenExpired(token) && Objects.equals(getUsername(token), auth.getName());
+    }
+
+
 }

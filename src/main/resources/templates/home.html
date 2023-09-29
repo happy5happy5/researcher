@@ -3,10 +3,18 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Title</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const token = [[${token}]];
+        /*]]>*/
+        console.log(token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    </script>
 </head>
 <body>
-
-This is main page
-
+<h1>Welcome to the Home Page</h1>
+<a th:href="@{/auth/login}">Login</a>
+<a th:href="@{/user/test}">UserOnly</a>
 </body>
 </html>

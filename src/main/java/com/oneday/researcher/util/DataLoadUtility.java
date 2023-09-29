@@ -42,11 +42,11 @@ public class DataLoadUtility implements CommandLineRunner {
         Set<Role> roles2 = Set.of(userRole);
         Set<Role> roles3 = Set.of(adminRole, userRole);
 
-        registerUser( "zombil8731", "1234", "윤종복", "zombil8731@gmail.com", "01090281679", roles);
-        registerUser( "songsong", "1234", "박송이", "songp875@gmail.com", "01040026862", roles2);
-        registerUser( "yhs000727", "1234", "양희수", "yhs000727@naver.com", "01094719727", roles2);
-        registerUser( "parksk", "1234", "박상균", "parksk@metabuild.co.kr", "01032337280", roles2);
-        registerUser( "okdol", "1234", "조옥현", "okdol@metabuild.co.kr", "01027074294", roles2);
+        registerUser( "zombil8731", "1234", "윤종복", "zombil8731@gmail.com", "01090281679", roles3);
+        registerUser( "songsong", "1234", "박송이", "songp875@gmail.com", "01040026862", roles);
+        registerUser( "yhs000727", "1234", "양희수", "yhs000727@naver.com", "01094719727", roles);
+        registerUser( "parksk", "1234", "박상균", "parksk@metabuild.co.kr", "01032337280", roles);
+        registerUser( "okdol", "1234", "조옥현", "okdol@metabuild.co.kr", "01027074294", roles);
         registerUser( "alzack", "1234", "임예준", "alzack@kibwa.org", "01099340633", roles2);
         registerUser( "admin", "1234", "관리자", "test@test.com", "01012345678", roles3);
     }

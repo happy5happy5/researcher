@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.beans.Encoder;
 import java.util.logging.Logger;
 
 //@EnableWebSecurity
@@ -42,7 +43,6 @@ public class SecurityConfig {
 
     public SecurityConfig(RSAKeyProperties keys) {
         this.keys = keys;
-//        this.jwtAuthFilter = jwtAuthFilter;
     }
 
 
@@ -67,18 +67,18 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .anyRequest().permitAll()
-                );
-//                                .requestMatchers("/admin/**").hasRole("ADMIN")
-//                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-//                                .anyRequest().authenticated());
-//                        .oauth2Login(oauth2 -> oauth2
-//                                .loginPage("/auth/login")
-//                                .defaultSuccessUrl("/auth/login?success=true")
-//                                .failureUrl("/auth/login?error=true")
-//                                .permitAll()
-//                        );
+                                .requestMatchers("/", "/auth/**").permitAll()
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                                .anyRequest().authenticated());
+
         http
+                .oauth2ResourceServer(oauth->{
+                    oauth.jwt(jwt->{
+//                        jwt.decoder(jwtDecoder());
+                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
+                    });
+                })
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 //                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

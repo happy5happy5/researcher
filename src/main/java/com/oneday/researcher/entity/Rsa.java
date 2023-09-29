@@ -14,12 +14,12 @@ import lombok.Setter;
 public class Rsa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rsa_seq;
+    private Integer rsa_seq;
 
-    private Long rs_seq;
-    private Long rsi_seq;
-    private Long uid;
-    private Long rsi_no;
+    private Integer rs_seq;
+    private Integer rsi_seq;
+    private Integer user_id;
+    private Integer rsi_no;
     private String rsi_type;
     private String rsa_type0;
     private String rsa_type0_etc;
@@ -40,7 +40,7 @@ public class Rsa {
 
     // 다대일 관계 설정
     @ManyToOne
-    @JoinColumn(name = "uid", referencedColumnName = "uid", insertable = false, updatable = false)
-    private User user;
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    private ApplicationUser user;
 
 }

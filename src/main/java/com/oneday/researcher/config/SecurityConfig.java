@@ -1,94 +1,118 @@
 package com.oneday.researcher.config;
 
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.oneday.researcher.util.RSAKeyProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.logging.Logger;
 
+//@EnableWebSecurity
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     private final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
 
+    private final RSAKeyProperties keys;
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        logger.info("userDetailsService");
-//        return userid -> {
-//            logger.info("userid: " + userid);
-//            return null;
-//        };
-//    }
-
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/resources/**");
+    public SecurityConfig(RSAKeyProperties keys) {
+        this.keys = keys;
     }
-    @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("defaultSecurityFilterChain");
-        http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/login", "/signup", "/css/**", "/images/**", "/js/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-//                .formLogin(withDefaults());
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/login")
-                                .defaultSuccessUrl("/", true)
-                                .permitAll()
-                )   .logout(logout ->
-                logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-        );
-        return http.build();
-    }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        logger.info("filterChain");
-//        http.authorizeHttpRequests(
-//                request -> request
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers(
-//                                "/",
-//                                "/home",
-//                                "/login",
-//                                "/signup",
-//                                "/css/**",
-//                                "/images/**",
-//                                "/js/**"
-//                        )
-//                        .permitAll()
-//                )
-//                .formLogin(form -> form
-//                        .loginPage("/login")
-//                        .usernameParameter("userid")
-//                        .passwordParameter("password")
-//                        .defaultSuccessUrl("/", true)
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .logoutSuccessUrl("/")
-//                );
-//        return http.build();
-//    }
 
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager autManager(UserDetailsService userDetailsService) {
+        logger.info("autManager");
+        DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
+        daoProvider.setUserDetailsService(userDetailsService);
+        daoProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(daoProvider);
+    }
+
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        logger.info("defaultSecurityFilterChain");
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                                .anyRequest().authenticated());
+
+//        http
+//                .formLogin(
+//                        form -> form
+//                                .loginPage("/auth/login")
+//                                .loginProcessingUrl("/auth/login")
+//                                .defaultSuccessUrl("/auth/success", true)
+//                                .failureUrl("/auth/failure")
+//                                .permitAll()
+//                );
+
+        http
+                .oauth2ResourceServer(oauth->{
+                    oauth.jwt(jwt->{
+//                        jwt.decoder(jwtDecoder());
+                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
+                    });
+                })
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
+        ;
+        return http.build();
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(this.keys.getPublicKey()).build();
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder() {
+        JWK jwk = new RSAKey.Builder(this.keys.getPublicKey()).privateKey(this.keys.getPrivateKey()).build();
+        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+        converter.setAuthoritiesClaimName("roles");
+        converter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+        return jwtConverter;
+    }
+
+
 }

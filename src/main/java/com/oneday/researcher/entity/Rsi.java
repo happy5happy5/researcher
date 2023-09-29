@@ -16,11 +16,11 @@ import java.util.List;
 public class Rsi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rsi_seq;
+    private Integer rsi_seq;
 
-    private Long rs_seq;
+    private Integer rs_seq;
     private String rsi_question;
-    private Long rsi_no;
+    private Integer rsi_no;
     private String rsi_type; // 0: 객관식 1: OX 2: likert 3: 주관식 4: 별점 5: 다중선택
     private String rsi_type0_1;
     private String rsi_type0_2;
@@ -39,7 +39,7 @@ public class Rsi {
     private Rs rs;
 
     // 일대다 관계 설정
-    @OneToMany(mappedBy = "rsi")
+    @OneToMany(mappedBy = "rsi", cascade = CascadeType.ALL)
     private List<Rsa> rsaList;
 
 }

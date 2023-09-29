@@ -15,23 +15,23 @@ import lombok.Setter;
 public class Rsr {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rsr_seq;
+    private Integer rsr_seq;
 
-    private Long rs_seq;
-    private Long rsi_no;
+    private Integer rs_seq;
+    private Integer rsi_no;
     private String rsi_type;
     private String rsr_total;
-    private Long rsr_type0_1;
-    private Long rsr_type0_2;
-    private Long rsr_type0_3;
-    private Long rsr_type0_4;
-    private Long rsr_type0_5;
+    private Integer rsr_type0_1;
+    private Integer rsr_type0_2;
+    private Integer rsr_type0_3;
+    private Integer rsr_type0_4;
+    private Integer rsr_type0_5;
     private String rsr_type0_etc_yn;
-    private Long rsr_type1_o;
-    private Long rsr_type1_x;
-    private Long rsr_type2;
+    private Integer rsr_type1_o;
+    private Integer rsr_type1_x;
+    private Integer rsr_type2;
     private String rsr_type3_yn;
-    private Long rsr_type4;
+    private Integer rsr_type4;
 
     // 다대일 관계 설정
     @ManyToOne

@@ -12,13 +12,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @Component
-class ApplicationRunner implements org.springframework.boot.ApplicationRunner {
+class ApplicationRunnerUtility implements org.springframework.boot.ApplicationRunner {
 
     private final WebServerApplicationContext context;
-    private final Logger logger = LoggerFactory.getLogger(ApplicationRunner.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationRunnerUtility.class);
 
     @Autowired
-    public ApplicationRunner(WebServerApplicationContext context) {
+    public ApplicationRunnerUtility(WebServerApplicationContext context) {
         this.context = context;
     }
 

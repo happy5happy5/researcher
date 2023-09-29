@@ -2,20 +2,84 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Title</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Login</title>
 </head>
 <body>
-로그인 페이지
-<form action="/login" method="post">
-    <div>
-        <label for="userid">Username</label>
-        <input type="text" id="userid" name="userid" placeholder="UserId" value="zombil8731">
-    </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Password" value="1234">
-    </div>
-    <button type="submit">Login</button>
+<h1>Please Log In</h1>
+<div th:if="${param.error}">
+    Invalid username and password.
+</div>
+<div th:if="${param.logout}">
+    You have been logged out.
+</div>
+
+<form th:action="@{/auth/login}" method="post">
+    <div><label> User Name : <input type="text" name="username" value="zombil8731"/> </label></div>
+    <div><label> Password: <input type="password" name="password" value="1234"/> </label></div>
+    <button type="submit" onclick="submitAction()">Log in</button>
 </form>
+<label>token : <input type="text" name="token"></label>
+<button onclick="testAction()">Log in</button>
+
+<script>
+
+    function testAction(){
+        let token=document.getElementsByName("token")[0].value;
+        axios.get('/user/test',{
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(response => {
+                // 요청이 성공한 경우의 처리
+                console.log(response.data);
+            })
+            .catch(error => {
+                // 오류 발생 시의 처리
+                console.log(error);
+            });
+    }
+    function submitAction() {
+        let username = document.getElementsByName("username")[0].value;
+        let password = document.getElementsByName("password")[0].value;
+
+        axios.post('/auth/login', {
+            username: username,
+            password: password
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                // 요청이 성공한 경우의 처리
+                // 받아온 토큰을 header에 추가하고 리다이렉트
+                console.log(response.body);
+                // document.getElementsByName("token")[0].value=response.data.token;
+                // testAction();
+            })
+            .catch(error => {
+                // 오류 발생 시의 처리
+                console.log(error);
+            });
+    }
+    window.onload = function () {
+        console.log("onload");
+    //     쿠키중에 "token" 의 값 확인
+        let token = document.cookie.split(';').find((c) => c.trim().startsWith('token='));
+
+        // if (token != null) {
+        //     document.getElementsByName("token")[0].value = token;
+        // }
+        console.log(token);
+    }
+    //     let username = document.getElementsByName("username")[0].value;
+    //     let password = document.getElementsByName("password")[0].value;
+    //
+    //     axios.post('/auth/login', {
+
+</script>
 </body>
 </html>

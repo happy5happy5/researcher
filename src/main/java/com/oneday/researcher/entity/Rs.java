@@ -16,24 +16,26 @@ import java.util.List;
 public class Rs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rs_seq;
+    private Integer rs_seq;
 
-    private Long uid;
+//    private Integer userId;
+    private String username;
     private String rs_title;
     private String rs_desc;
-    private Long rs_cnt;
+    private Integer rs_cnt;
     private String rs_start_date;
     private String rs_end_date;
     private String use_yn;
-    private Long hits;
+    private Integer hits;
 
     // 다대일 관계 설정
     @ManyToOne
-    @JoinColumn(name = "uid", referencedColumnName = "uid", insertable = false, updatable = false)
-    private User user;
+//    @JoinColumn(name = "userId", referencedColumnName = "user_id")
+    @JoinColumn(name = "username", referencedColumnName = "username" , insertable = false, updatable = false)
+    private ApplicationUser user;
 
     // 일대다 관계 설정
-    @OneToMany(mappedBy = "rs")
+    @OneToMany(mappedBy = "rs", cascade = CascadeType.ALL)
     private List<Rsi> rsiList;
 
 }

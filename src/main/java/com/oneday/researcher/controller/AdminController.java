@@ -12,7 +12,7 @@ public class AdminController {
 
     private final Logger logger = Logger.getLogger(AdminController.class.getName());
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String admin() {
         logger.info("[GET] /admin");
         return "admin";

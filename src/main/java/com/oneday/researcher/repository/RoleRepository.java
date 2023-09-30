@@ -1,7 +1,5 @@
 package com.oneday.researcher.repository;
 
-
-
 import com.oneday.researcher.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +10,5 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     Optional<Role> findByAuthority(String authority);
 
-    Optional<Role> findByRoleId(Integer roleId);
+//    Optional<Role> findByRoleId(Integer roleId);
 }

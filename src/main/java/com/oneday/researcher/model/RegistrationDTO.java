@@ -3,9 +3,6 @@ package com.oneday.researcher.model;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.beans.Encoder;
 
 @AllArgsConstructor
 @NoArgsConstructor

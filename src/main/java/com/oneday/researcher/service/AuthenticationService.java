@@ -41,7 +41,7 @@ public class AuthenticationService {
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             String token = tokenService.generateJWT(auth);
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+            return new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(), token);
         }catch (AuthenticationException e){
             return new LoginResponseDTO(null,"");
         }
@@ -49,16 +49,12 @@ public class AuthenticationService {
 
 
     public ApplicationUser registerUser(RegistrationDTO body) {
-        Role userRole = roleRepository.findByAuthority("USER").get();
+        Role userRole = roleRepository.findByAuthority("USER").orElseThrow();
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
         ApplicationUser applicationUser = new ApplicationUser(body);
         applicationUser.setPassword(passwordEncoder.encode(body.getPassword()));
         applicationUser.setAuthorities(authorities);
         return userRepository.save(applicationUser);
-    }
-
-    public ApplicationUser registerUser(String username, String password) {
-        return null;
     }
 }

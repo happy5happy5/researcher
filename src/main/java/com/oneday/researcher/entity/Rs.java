@@ -18,7 +18,7 @@ public class Rs {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer rs_seq;
 
-//    private Integer userId;
+    //    private Integer userId;
     private String username;
     private String rs_title;
     private String rs_desc;
@@ -31,7 +31,7 @@ public class Rs {
     // 다대일 관계 설정
     @ManyToOne
 //    @JoinColumn(name = "userId", referencedColumnName = "user_id")
-    @JoinColumn(name = "username", referencedColumnName = "username" , insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     private ApplicationUser user;
 
     // 일대다 관계 설정

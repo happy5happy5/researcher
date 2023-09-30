@@ -4,12 +4,15 @@ import com.oneday.researcher.entity.ApplicationUser;
 import com.oneday.researcher.model.LoginResponseDTO;
 import com.oneday.researcher.model.RegistrationDTO;
 import com.oneday.researcher.service.AuthenticationService;
+import com.oneday.researcher.service.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,11 +29,13 @@ public class AuthenticationController {
 
 
     private final AuthenticationService authenticationService;
+    private final TokenService tokenService;
 
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(AuthenticationService authenticationService, TokenService tokenService) {
         this.authenticationService = authenticationService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/login")
@@ -53,6 +58,15 @@ public class AuthenticationController {
         }
 
         return "redirect:/auth/login?error=1";
+    }
+
+    @PostMapping("/validate")
+    @ResponseBody
+//    해더에서 토큰 받아서 유효한지 확인
+    public boolean validate(@RequestHeader("Authorization") String token) {
+        log.info("[POST] /auth/validate");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      return tokenService.validateToken(token,auth);
     }
 
     @GetMapping("/register")

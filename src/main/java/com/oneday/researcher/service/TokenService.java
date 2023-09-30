@@ -59,6 +59,9 @@ public class TokenService {
     }
 
     public boolean validateToken(String token, Authentication auth) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         return !isTokenExpired(token) && Objects.equals(getUsername(token), auth.getName());
     }
 

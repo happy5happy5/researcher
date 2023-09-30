@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <title></title>
+</head>
+<body>
+
+
+    <div layout:fragment="content">
+        <!-- 중간 컨텐츠가 여기에 들어갑니다. -->
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

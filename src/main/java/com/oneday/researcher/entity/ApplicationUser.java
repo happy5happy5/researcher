@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class ApplicationUser implements UserDetails {
     private Set<Role> authorities;
 
     public ApplicationUser(RegistrationDTO dto){
+
         this.username = dto.getUsername();
         this.email = dto.getEmail();
         this.password = dto.getPassword();
@@ -74,5 +76,6 @@ public class ApplicationUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
 

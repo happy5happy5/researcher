@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.oneday.researcher.util.RSAKeyProperties;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,7 +46,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -65,30 +66,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/", "/auth/**").permitAll()
+                                .requestMatchers("/","/research/list","/test/**", "/auth/**","/auth/register","/webjars/**","/css/**","/js/**","/img/**").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                                 .anyRequest().authenticated());
-//        http
-//                .formLogin(
-//                        form -> form
-//                                .loginPage("/auth/login")
-//                                .loginProcessingUrl("/auth/login")
-//                                .defaultSuccessUrl("/", true)
-//                                .failureUrl("/auth/login?error=true")
-//                                .permitAll()
-//                ).logout(
-//                logout -> logout
-//                        .logoutUrl("/auth/logout")
-//                        .logoutSuccessUrl("/auth/login")
-//        );
 
         http
-                .oauth2ResourceServer(oauth->{
-                    oauth.jwt(jwt->{
-                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
-                    });
-                })
+                .oauth2ResourceServer(oauth-> oauth.jwt(jwt-> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -115,6 +99,11 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
         return jwtConverter;
+    }
+
+    @Bean
+    public LayoutDialect layoutDialect() {
+        return new LayoutDialect();
     }
 
 }

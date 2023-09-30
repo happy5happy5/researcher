@@ -53,6 +53,7 @@ public class AuthenticationService {
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
         ApplicationUser applicationUser = new ApplicationUser(body);
+        applicationUser.setPassword(passwordEncoder.encode(body.getPassword()));
         applicationUser.setAuthorities(authorities);
         return userRepository.save(applicationUser);
     }

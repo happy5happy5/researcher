@@ -24,7 +24,9 @@
 
 <h1>Welcome to the Home Page</h1>
 <a th:href="@{/auth/login}" th:headers="${token}">Login</a>
-<a th:href="@{/admin/test}" th:headers="Bearer+${token}">AdminOnlyWithHeader</a>
+<!--<a th:href="@{/admin/test}" th:headers="Bearer+${token}">AdminOnlyWithHeader</a>-->
+<!--<a th:href="@{/user/test}" th:headers="Bearer+${token}">UserOnlyWithHeader</a>-->
+<a th:href="@{/auth/register}" th:headers="${token}">User Registration</a>
 <button onclick="rolePage('user')">UserOnly</button>
 <button onclick="rolePage('admin')">AdminOnly</button>
 <script>

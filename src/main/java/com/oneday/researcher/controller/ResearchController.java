@@ -6,18 +6,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.logging.Logger;
+
 @Slf4j
-@RequestMapping("/admin")
 @Controller
-public class AdminController {
+@RequestMapping("/research")
+public class ResearchController {
 
 
-    @GetMapping("/test")
-    public String admin() {
-        log.info("[GET] /admin");
-        return "pages/admin/admin";
+
+    @GetMapping("/list")
+    public String list() {
+        log.info("[GET] /research/list");
+        return "pages/research/listform";
     }
-
-//    admin page later
-
 }

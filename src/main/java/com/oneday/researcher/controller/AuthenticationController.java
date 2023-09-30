@@ -60,7 +60,6 @@ public class AuthenticationController {
             session.setAttribute("token", token);
             model.addAttribute("token", token);
             res.setHeader("Authorization", "Bearer " + token);
-//            res.setStatus(200);
             return "home";
         }
 

@@ -16,22 +16,23 @@ import java.util.List;
 public class Rsi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer rsi_seq;
+    private Integer rsi_seq; // 질문 번호
 
-    private Integer rs_seq;
-    private String rsi_question;
-    private Integer rsi_no;
+    private Integer rs_seq; // 설문지 번호
+    private String rsi_question; // 질문 내용
+    private Integer rsi_no; // 질문 번호
     private String rsi_type; // 0: 객관식 1: OX 2: likert 3: 주관식 4: 별점 5: 다중선택
-    private String rsi_type0_1;
-    private String rsi_type0_2;
-    private String rsi_type0_3;
-    private String rsi_type0_4;
-    private String rsi_type0_5;
-    private String rsi_type0_etc;
-    private String rsi_type1;
-    private String rsi_type2;
-    private String rsi_type3;
-    private String rsi_type4;
+    private String rsi_type0_1; // 객관식 1번 실제 질문 내용
+    private String rsi_type0_2; // 객관식 2번 실제 질문 내용
+    private String rsi_type0_3; // 객관식 3번 실제 질문 내용
+    private String rsi_type0_4; // 객관식 4번 실제 질문 내용
+    private String rsi_type0_5; // 객관식 5번 실제 질문 내용
+    private String rsi_type0_etc; // 기타 입력란이 있는지 여부
+    private String rsi_type1; // OX 인지 여부
+    private String rsi_type2; // likert 인지 여부
+    private String rsi_type3; // 주관식 인지 여부
+    private String rsi_type4; // 별점 인지 여부
+    private String rsi_type5; // 다중 선택 몇개?
 
     // 다대일 관계 설정
     @ManyToOne

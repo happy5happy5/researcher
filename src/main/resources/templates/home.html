@@ -5,18 +5,26 @@
     <title>Title</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
+
         /*<![CDATA[*/
         const token = [[${token}]];
         /*]]>*/
-        console.log(token);
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+        // if (token !== null) {
+        //     location.href = "/auth/login";
+        // }
+        /*global axios*/
+        axios["defaults"].headers["common"]['Authorization'] = 'Bearer ' + token;
         console.log(axios.defaults.headers.common['Authorization'])
 
     </script>
 </head>
 <body id="body">
+<!--서버의 응답 해더의 토큰을 화면에 표시-->
+<h1 th:text="${token}"></h1>
+
 <h1>Welcome to the Home Page</h1>
-<a th:href="@{/auth/login}">Login</a>
+<a th:href="@{/auth/login}" th:headers="${token}">Login</a>
+<a th:href="@{/admin/test}" th:headers="Bearer+${token}">AdminOnlyWithHeader</a>
 <button onclick="rolePage('user')">UserOnly</button>
 <button onclick="rolePage('admin')">AdminOnly</button>
 <script>

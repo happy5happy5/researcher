@@ -25,9 +25,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.beans.Encoder;
 import java.util.logging.Logger;
 
 //@EnableWebSecurity
@@ -71,17 +69,28 @@ public class SecurityConfig {
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                                 .anyRequest().authenticated());
+//        http
+//                .formLogin(
+//                        form -> form
+//                                .loginPage("/auth/login")
+//                                .loginProcessingUrl("/auth/login")
+//                                .defaultSuccessUrl("/", true)
+//                                .failureUrl("/auth/login?error=true")
+//                                .permitAll()
+//                ).logout(
+//                logout -> logout
+//                        .logoutUrl("/auth/logout")
+//                        .logoutSuccessUrl("/auth/login")
+//        );
 
         http
                 .oauth2ResourceServer(oauth->{
                     oauth.jwt(jwt->{
-//                        jwt.decoder(jwtDecoder());
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
                     });
                 })
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

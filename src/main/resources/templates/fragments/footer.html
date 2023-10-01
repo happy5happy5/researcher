@@ -2,8 +2,16 @@
 <!-- Thymeleaf 선언 / FooterFragment 임을 선언-->
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
 <footer th:fragment="footer" style="border: solid 1px blue">
-    <h1>Footer 영역</h1>
+<!--    sessionstage 의 정보를 이용해 표시-->
+    <h1 id="footer-context">Footer 영역</h1>
+    <script>
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     document.getElementById("footer-context").innerHTML = sessionStorage.getItem("sessionstage");
+        // });
+        // sessionStorage.getItem("sessionstage");
+    </script>
 </footer>
 </html>

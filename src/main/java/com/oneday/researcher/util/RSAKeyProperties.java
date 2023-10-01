@@ -20,6 +20,4 @@ public class RSAKeyProperties {
         this.publicKey = (RSAPublicKey) keyPair.getPublic();
         this.privateKey = (RSAPrivateKey) keyPair.getPrivate();
     }
-
-
 }

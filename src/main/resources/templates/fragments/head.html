@@ -5,15 +5,86 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/css/index.css}" rel="stylesheet"/>
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
-    <link rel="icon"  type="image/png" href="/img/favicon.png">
+    <script type="text/javascript" th:src="@{/js/axios.js}"></script>
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <script th:inline="javascript">
+        let isLogin = false;
+        document.addEventListener("DOMContentLoaded", function () {
+
+            let loginResponseDTO = {
+                applicationUser: '',
+                token: ''
+            }
+            /*<![CDATA[*/
+            loginResponseDTO = [[${loginResponseDTO}]];
+            /*]]>*/
+
+
+            if (loginResponseDTO) {
+                sessionStorage.setItem('applicationUser', JSON.stringify(loginResponseDTO.applicationUser))
+                sessionStorage.setItem('token', JSON.stringify(loginResponseDTO.token))
+                axios.defaults.headers.common['Authorization'] = "Bearer " + loginResponseDTO.token;
+                isLogin = true;
+                console.log('just logged in')
+                // 페이지 리로드
+                location.reload()
+                return
+            }
+            if (sessionStorage.getItem('applicationUser') && sessionStorage.getItem('token')) {
+                let token = JSON.parse(sessionStorage.getItem('token'))
+                axios.defaults.headers.common['Authorization'] = "Bearer " + token;
+                validateTokenByHeader()
+                    .then(function (response) {
+                        console.log(response)
+                        if (response) {
+                            isLogin = true;
+                            console.log("used session storage token")
+                        }
+                    }).catch(function (error) {
+                    console.log(error)
+                    sessionStorage.clear()
+                    axios.defaults.headers.common['Authorization'] = undefined;
+                })
+            } else {
+                console.log('not logged in')
+                sessionStorage.clear()
+                axios.defaults.headers.common['Authorization'] = undefined;
+            }
+        })
+
+    </script>
     <script>
         // Toggle Animation by Class
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             if (window.scrollY > 100) {
                 document.querySelector('nav').classList.add('animate');
             } else {
                 document.querySelector('nav').classList.remove('animate');
             }
         });
+
+        function validateTokenByHeader() {
+            return axios.post('/auth/validate')
+                .then(function (response) {
+                    console.log(response)
+                    return response.data
+                })
+        }
+        function userInformationFromSessionStorage(){
+            let applicationUser = JSON.parse(sessionStorage.getItem('applicationUser'))
+            let userInformation ={
+                username: "",
+                email: "",
+                name: "",
+                authorities: []
+            }
+            if(applicationUser){
+                userInformation.username = applicationUser.username
+                userInformation.email = applicationUser.email
+                userInformation.name = applicationUser.name
+                userInformation.authorities = applicationUser.authorities
+            }
+            return userInformation
+        }
     </script>
 </head>

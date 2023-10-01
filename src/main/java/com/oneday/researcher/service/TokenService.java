@@ -58,11 +58,10 @@ public class TokenService {
         return Objects.requireNonNull(jwtDecoder.decode(token).getExpiresAt()).isBefore(Instant.now());
     }
 
-    public boolean validateToken(String token, Authentication auth) {
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-        return !isTokenExpired(token) && Objects.equals(getUsername(token), auth.getName());
+    public boolean validateToken(String token) {
+        // "Bearer "를 제거하여 토큰 문자열 추출
+        token = token.replace("Bearer ", "");
+        return !isTokenExpired(token);
     }
 
 

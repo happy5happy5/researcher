@@ -1,46 +1,56 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{common/defaultLayout}">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Title</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script th:inline="javascript">
-
-        /*<![CDATA[*/
-        const token = [[${token}]];
-        /*]]>*/
-        // if (token !== null) {
-        //     location.href = "/auth/login";
-        // }
-        /*global axios*/
-        axios["defaults"].headers["common"]['Authorization'] = 'Bearer ' + token;
-        console.log(axios["defaults"].headers["common"]['Authorization'])
-
-    </script>
 </head>
-<body id="body">
-<!--서버의 응답 해더의 토큰을 화면에 표시-->
-<h1 th:text="${token}"></h1>
+<body>
+    <div layout:fragment="content">
+        <div>
+            <div class="row" sec:authorize="hasRole('USER')">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>Only User can See This</h3>
+                            <p>If you have the "ROLE_USER".
+                                You will be able to see this section. User Section.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" sec:authorize="hasRole('ADMIN')">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>Only User can See This</h3>
+                            <p>If you have the "ROLE_USER".
+                                You will be able to see this section. User Section.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${authenticated}">
+            <h2>로그인 되었습니다.</h2>
+        </div>
+        <div th:text="${username}"></div>
+        <div th:text="${authorities}"></div>
 
-<h1>Welcome to the Home Page</h1>
-<a th:href="@{/auth/login}" th:headers="${token}">Login</a>
-<!--<a th:href="@{/admin/test}" th:headers="Bearer+${token}">AdminOnlyWithHeader</a>-->
-<!--<a th:href="@{/user/test}" th:headers="Bearer+${token}">UserOnlyWithHeader</a>-->
-<a th:href="@{/auth/register}" th:headers="${token}">User Registration</a>
-<button onclick="rolePage('user')">UserOnly</button>
-<button onclick="rolePage('admin')">AdminOnly</button>
-<script>
-    function rolePage(role) {
-        axios.get('/' + role + '/test')
-            .then(function (response) {
-                console.log(response);
-            //     응답으로 받은 데이터를 화면에 출력
-                document.getElementById("body").innerHTML = response.data;
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
-    }
-</script>
+        <div id="tokenShow"></div>
+        <div id="applicationUserShow"></div>
+        <div id="userInformationShow"></div>
+        home!!!
+        <script>
+            // document.querySelector('#tokenShow').innerHTML = sessionStorage.getItem("token")
+
+            let userInfo = userInformationFromSessionStorage()
+            document.querySelector("#userInformationShow").innerHTML = JSON.stringify(userInfo)
+
+
+        </script>
+    </div>
 </body>
 </html>

@@ -5,24 +5,52 @@
     <title>Title</title>
 </head>
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand-lg fixed-top navbar-default">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg fixed-top navbar-default" id="nav-layout">
     <div class="container">
         <a href="#" class="navbar-brand ">Company Logo</a>
         <button type="button" class="navbar-toggler shadow-none" data-bs-toggle="collapse" data-bs-target="#resNav">
-<!--            <span class="navbar-toggler-icon"></span>-->
+            <!--            <span class="navbar-toggler-icon"></span>-->
             <img alt="" src="/img/blue-burger-menu.png" width="40" height="40">
         </button>
         <div class="collapse navbar-collapse" id="resNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Team</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                <li class="nav-item"><button th:href="@{/}" class="nav-link text-white border-0 bg-transparent" onclick="handleNavClick('/')">Home</button></li>
+                <li class="nav-item"><button th:href="@{/research/list}" class="nav-link text-white border-0 bg-transparent" onclick="handleNavClick('/research/list')">List</button></li>
+                <li class="nav-item"><button th:href="@{/user/test}" class="nav-link text-white border-0 bg-transparent" onclick="handleNavClick('/user/test')">UserPage</button></li>
+                <li class="nav-item"><button th:href="@{/auth/login}" class="nav-link text-white border-0 bg-transparent" onclick="handleNavClick('/auth/login')">Login</button></li>
+                <li class="nav-item"><button th:href="@{/auth/register}" class="nav-link text-white border-0 bg-transparent" onclick="handleNavClick('/auth/register')">SignIn</button></li>
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasRole(''USER'')')}">-->
+<!--                    <a th:href="@{/user/test}" class="nav-link">UserPage2</a>-->
+<!--                </li>-->
+<!--                &lt;!&ndash; 조건부 렌더링: 로그인한 경우에만 표시 &ndash;&gt;-->
+<!--                <li th:if="${#httpServletRequest.userPrincipal != null}" class="nav-item">-->
+<!--                    <a th:href="@{/user/test}" class="nav-link">UserPage</a>-->
+<!--                </li>-->
+<!--                &lt;!&ndash; 조건부 렌더링: 로그인하지 않은 경우에만 표시 &ndash;&gt;-->
+<!--                <li th:unless="${#httpServletRequest.userPrincipal != null}" class="nav-item">-->
+<!--                    <a th:href="@{/auth/login}" class="nav-link">Login</a>-->
+<!--                </li>-->
             </ul>
+
         </div>
     </div>
+    <script>
+        function handleNavClick(url){
+            axios.get(url)
+                .then(function (response) {
+                    console.log(response);
+                    document.body.innerHTML = response.data;
 
+                    // 브라우저의 주소창을 잘 변경해야한다
+                    // 현재 주소를 그전 주소로 저장
+                    history.pushState({url: url}, null, null);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+        }
+    </script>
 </nav>
 
 </body>

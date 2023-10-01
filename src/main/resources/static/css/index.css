@@ -21,3 +21,8 @@
 .navbar:hover{
     background-color: #1b6ca8;
 }
+
+.nav-link:hover{
+    color: #1b6ca8 !important;
+    cursor: pointer;
+}

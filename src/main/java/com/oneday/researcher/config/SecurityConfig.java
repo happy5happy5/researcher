@@ -6,14 +6,18 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.oneday.researcher.util.JwtAuthFilter;
 import com.oneday.researcher.util.RSAKeyProperties;
+import lombok.extern.slf4j.Slf4j;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,23 +31,20 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.logging.Logger;
 
-//@EnableWebSecurity
+@Slf4j
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
-    private final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
-
     private final RSAKeyProperties keys;
-
 //    private final JwtAuthFilter jwtAuthFilter;
 
-
+    @Autowired
     public SecurityConfig(RSAKeyProperties keys) {
         this.keys = keys;
+//        this.jwtAuthFilter = jwtAuthFilter;
     }
-
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -52,7 +53,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager autManager(UserDetailsService userDetailsService) {
-        logger.info("autManager");
+        log.info("autManager");
         DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
         daoProvider.setUserDetailsService(userDetailsService);
         daoProvider.setPasswordEncoder(passwordEncoder());
@@ -61,21 +62,50 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        logger.info("defaultSecurityFilterChain");
+        log.info("defaultSecurityFilterChain");
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/","/research/list","/test/**", "/auth/**","/auth/register","/webjars/**","/css/**","/js/**","/img/**").permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                                .anyRequest().authenticated());
+                                .anyRequest().permitAll());
+//                                .requestMatchers("/", "/research/list", "/test/**", "/auth/**", "/webjars/**", "/css/**", "/js/**", "/img/**").permitAll()
+//                                .requestMatchers("/admin/**").hasRole("ADMIN")
+//                                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+//                                .anyRequest().authenticated());
+
+//        http
+//                .formLogin(
+//                        form -> form
+//                                .loginPage("/auth/login")
+//                                .loginProcessingUrl("/auth/login")
+//                                .defaultSuccessUrl("/", true)
+//                                .failureUrl("/auth/login?error=true")
+//                                .permitAll()
+//                )
+//                .logout(
+//                        logout -> logout
+//                                .logoutUrl("/auth/logout")
+//                                .logoutSuccessUrl("/auth/login")
+//                                .invalidateHttpSession(true)
+//                                .deleteCookies("JSESSIONID")
+//                                .permitAll()
+//                ).
+//                exceptionHandling(
+//                        exception -> exception
+//                                .accessDeniedPage("/403")
+//                                .accessDeniedHandler(new AccessDeniedConfig())
+//                );
+
 
         http
-                .oauth2ResourceServer(oauth-> oauth.jwt(jwt-> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+//                .addFilter(jwtAuthFilter)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+//                .authenticationProvider(authenticationProvider()).addFilterBefore(
+//                        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//                .authenticationManager(autManager(userDetailsService)).addFilterBefore(
+//                        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
